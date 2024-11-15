@@ -12,6 +12,7 @@ const App = () => {
   const [todos, setTodos] = useState(todoManager.filterTodos("all"));
   const [task, setTask] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("Medium");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -20,34 +21,32 @@ const App = () => {
 
   const handleAddTodo = () => {
     if (!task) return;
-    todoManager.addTodo(task, dueDate);
+    todoManager.addTodo(task, dueDate, priority);
     setTodos(todoManager.filterTodos("all"));
     setTask("");
     setDueDate("");
+    setPriority("Medium");
   };
-
 
   const handleDeleteTodo = (id) => {
     todoManager.deleteTodo(id);
     setTodos(todoManager.filterTodos("all"));
   };
 
-
   const handleToggleStatus = (id) => {
     todoManager.toggleTodoStatus(id);
     setTodos(todoManager.filterTodos("all"));
   };
-
 
   const handleEditTodo = (id) => {
     const todo = todoManager.todos.find((t) => t.id === id);
     if (todo) {
       setTask(todo.task);
       setDueDate(todo.dueDate);
+      setPriority(todo.priority);
       todoManager.deleteTodo(id);
     }
   };
-
 
   const filteredTodos = todos.filter((todo) =>
     todo.task.toLowerCase().includes(searchQuery.toLowerCase())
@@ -62,6 +61,8 @@ const App = () => {
           onTaskChange={(e) => setTask(e.target.value)}
           dateValue={dueDate}
           onDateChange={(e) => setDueDate(e.target.value)}
+          priorityValue={priority}
+          onPriorityChange={(e) => setPriority(e.target.value)}
           onAdd={handleAddTodo}
         />
       </header>
@@ -97,12 +98,12 @@ const App = () => {
         </button>
       </div>
 
-  
       <table className="table w-full">
         <thead>
           <tr>
             <th>Task</th>
             <th>Due Date</th>
+            <th>Priority</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
