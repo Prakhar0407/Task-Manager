@@ -7,7 +7,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
-  transition: all 0.3s ease;
 }
 
 body {
@@ -16,7 +15,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #121212;
-  color: #ffffff;
+  color: Aqua;
   padding: 20px;
 }
 
@@ -117,11 +116,6 @@ button {
   background-color: var(--color-primary);
   border: none;
   color: white;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: var(--color-button-hover);
 }
 
 /* Filter Section */
@@ -134,10 +128,9 @@ button:hover {
 }
 
 .todos-filter button {
-  background-color: var(--color-secondary);
   border-radius: 8px;
   padding: 8px 12px;
-  color: white;
+  color: black;
   border: none;
   cursor: pointer;
 }
@@ -162,32 +155,46 @@ button:hover {
 
 .table th {
   background-color: var(--color-primary);
-  color: white;
+  color: black;
 }
 
+/* Todo Item Styling */
 .todos-list .todo-item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid var(--color-border);
-  transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
 .todos-list .todo-item:hover {
-  background-color: #2c2c2c;
+  background-color: red;
+  color: #121212;
+  border-radius: 6px;
+}
+
+.todo-item .task {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .todo-actions button {
   font-size: 14px;
-  margin-left: 10px;
   padding: 8px;
   border-radius: 6px;
-  background-color: red;
+  background-color: #dc3545;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+
 }
 
 .todo-actions button:hover {
@@ -200,7 +207,7 @@ button:hover {
   background: red;
 }
 
-
+/* Responsive Design */
 @media only screen and (max-width: 768px) {
   .container {
     padding: 20px;
@@ -241,5 +248,10 @@ button:hover {
     flex-direction: column;
     padding: 15px;
     margin-bottom: 10px;
+  }
+
+  .todo-actions {
+    flex-direction: column;
+    gap: 8px;
   }
 }

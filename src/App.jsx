@@ -16,20 +16,30 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("all"); // New state for filter status
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPriority, setFilterPriority] = useState(""); // New state for priority filter
 
   useEffect(() => {
-    applyFilter(); // Apply filter whenever the filterStatus changes
-  }, [filterStatus, todoManager]);
+    applyFilter();
+  }, [filterStatus, filterPriority, todoManager]);
 
   const applyFilter = () => {
-    setTodos(todoManager.filterTodos(filterStatus));
+    let filteredTodos = todoManager.filterTodos(filterStatus);
+
+    if (filterPriority) {
+      filteredTodos = filteredTodos.filter(
+        (todo) => todo.priority.toLowerCase() === filterPriority.toLowerCase()
+      );
+    }
+
+    setTodos(filteredTodos);
   };
 
   const handleAddTodo = () => {
     if (!task) return;
     todoManager.addTodo(task, dueDate, priority);
-    setFilterStatus("all"); // Reset to show all tasks after adding
+    setFilterStatus("all");
+    setFilterPriority("");
     applyFilter();
     setTask("");
     setDueDate("");
@@ -144,6 +154,33 @@ const App = () => {
           onClick={() => setFilterStatus("completed")}
         >
           Completed
+        </button>
+      </div>
+
+      <div className="priority-filter">
+        <button
+          className={`btn btn-secondary ${filterPriority === "" ? "active" : ""}`}
+          onClick={() => setFilterPriority("")}
+        >
+          All Priorities
+        </button>
+        <button
+          className={`btn btn-secondary ${filterPriority === "low" ? "active" : ""}`}
+          onClick={() => setFilterPriority("low")}
+        >
+          Low
+        </button>
+        <button
+          className={`btn btn-secondary ${filterPriority === "medium" ? "active" : ""}`}
+          onClick={() => setFilterPriority("medium")}
+        >
+          Medium
+        </button>
+        <button
+          className={`btn btn-secondary ${filterPriority === "high" ? "active" : ""}`}
+          onClick={() => setFilterPriority("high")}
+        >
+          High
         </button>
       </div>
 
