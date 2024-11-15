@@ -11,19 +11,11 @@ export class TodoManager {
       dueDate: this.todoItemFormatter.formatDueDate(dueDate),
       priority: priority || "Medium",
       completed: false,
-      status: "pending",
+      status: "Pending", // Default status
     };
     this.todos.push(newTodo);
     this.saveToLocalStorage();
     return newTodo;
-  }
-
-  updateTodoPriority(id, newPriority) {
-    const todo = this.todos.find((t) => t.id === id);
-    if (todo) {
-      todo.priority = newPriority;
-      this.saveToLocalStorage();
-    }
   }
 
   deleteTodo(id) {
@@ -35,6 +27,15 @@ export class TodoManager {
     const todo = this.todos.find((t) => t.id === id);
     if (todo) {
       todo.completed = !todo.completed;
+      todo.status = todo.completed ? "Completed" : "Pending"; // Update status based on completion
+      this.saveToLocalStorage();
+    }
+  }
+
+  updateTodoPriority(id, newPriority) {
+    const todo = this.todos.find((t) => t.id === id);
+    if (todo) {
+      todo.priority = newPriority;
       this.saveToLocalStorage();
     }
   }
