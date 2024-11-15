@@ -14,17 +14,23 @@ const App = () => {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [searchQuery, setSearchQuery] = useState("");
-  const [editMode, setEditMode] = useState(false); // New state to track editing
-  const [editingId, setEditingId] = useState(null); // New state to track the ID of the task being edited
+  const [editMode, setEditMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [filterStatus, setFilterStatus] = useState("all"); // New state for filter status
 
   useEffect(() => {
-    setTodos(todoManager.filterTodos("all"));
-  }, [todoManager]);
+    applyFilter(); // Apply filter whenever the filterStatus changes
+  }, [filterStatus, todoManager]);
+
+  const applyFilter = () => {
+    setTodos(todoManager.filterTodos(filterStatus));
+  };
 
   const handleAddTodo = () => {
     if (!task) return;
     todoManager.addTodo(task, dueDate, priority);
-    setTodos(todoManager.filterTodos("all"));
+    setFilterStatus("all"); // Reset to show all tasks after adding
+    applyFilter();
     setTask("");
     setDueDate("");
     setPriority("Medium");
@@ -53,7 +59,6 @@ const App = () => {
       status: todos.find((t) => t.id === editingId)?.completed ? "Completed" : "Pending",
     };
 
-    // Update the todo in the manager
     const updatedTodos = todos.map((t) =>
       t.id === editingId ? updatedTodo : t
     );
@@ -61,7 +66,6 @@ const App = () => {
     todoManager.todos = updatedTodos;
     todoManager.saveToLocalStorage();
 
-    // Reset states
     setTask("");
     setDueDate("");
     setPriority("Medium");
@@ -71,12 +75,12 @@ const App = () => {
 
   const handleDeleteTodo = (id) => {
     todoManager.deleteTodo(id);
-    setTodos(todoManager.filterTodos("all"));
+    applyFilter();
   };
 
   const handleToggleStatus = (id) => {
     todoManager.toggleTodoStatus(id);
-    setTodos(todoManager.filterTodos("all"));
+    applyFilter();
   };
 
   const filteredTodos = todos.filter((todo) =>
@@ -124,20 +128,20 @@ const App = () => {
 
       <div className="todos-filter">
         <button
-          className="btn btn-secondary"
-          onClick={() => setTodos(todoManager.filterTodos("all"))}
+          className={`btn btn-secondary ${filterStatus === "all" ? "active" : ""}`}
+          onClick={() => setFilterStatus("all")}
         >
           All
         </button>
         <button
-          className="btn btn-secondary"
-          onClick={() => setTodos(todoManager.filterTodos("pending"))}
+          className={`btn btn-secondary ${filterStatus === "pending" ? "active" : ""}`}
+          onClick={() => setFilterStatus("pending")}
         >
           Pending
         </button>
         <button
-          className="btn btn-secondary"
-          onClick={() => setTodos(todoManager.filterTodos("completed"))}
+          className={`btn btn-secondary ${filterStatus === "completed" ? "active" : ""}`}
+          onClick={() => setFilterStatus("completed")}
         >
           Completed
         </button>
