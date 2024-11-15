@@ -14,6 +14,8 @@ const App = () => {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [searchQuery, setSearchQuery] = useState("");
+  const [editMode, setEditMode] = useState(false); // New state to track editing
+  const [editingId, setEditingId] = useState(null); // New state to track the ID of the task being edited
 
   useEffect(() => {
     setTodos(todoManager.filterTodos("all"));
@@ -28,6 +30,45 @@ const App = () => {
     setPriority("Medium");
   };
 
+  const handleEditTodo = (id) => {
+    const todo = todoManager.todos.find((t) => t.id === id);
+    if (todo) {
+      setTask(todo.task);
+      setDueDate(todo.dueDate);
+      setPriority(todo.priority);
+      setEditMode(true);
+      setEditingId(id);
+    }
+  };
+
+  const handleUpdateTodo = () => {
+    if (!task || !editingId) return;
+
+    const updatedTodo = {
+      id: editingId,
+      task: todoItemFormatter.formatTask(task),
+      dueDate: todoItemFormatter.formatDueDate(dueDate),
+      priority,
+      completed: todos.find((t) => t.id === editingId)?.completed || false,
+      status: todos.find((t) => t.id === editingId)?.completed ? "Completed" : "Pending",
+    };
+
+    // Update the todo in the manager
+    const updatedTodos = todos.map((t) =>
+      t.id === editingId ? updatedTodo : t
+    );
+    setTodos(updatedTodos);
+    todoManager.todos = updatedTodos;
+    todoManager.saveToLocalStorage();
+
+    // Reset states
+    setTask("");
+    setDueDate("");
+    setPriority("Medium");
+    setEditMode(false);
+    setEditingId(null);
+  };
+
   const handleDeleteTodo = (id) => {
     todoManager.deleteTodo(id);
     setTodos(todoManager.filterTodos("all"));
@@ -36,16 +77,6 @@ const App = () => {
   const handleToggleStatus = (id) => {
     todoManager.toggleTodoStatus(id);
     setTodos(todoManager.filterTodos("all"));
-  };
-
-  const handleEditTodo = (id) => {
-    const todo = todoManager.todos.find((t) => t.id === id);
-    if (todo) {
-      setTask(todo.task);
-      setDueDate(todo.dueDate);
-      setPriority(todo.priority);
-      todoManager.deleteTodo(id);
-    }
   };
 
   const filteredTodos = todos.filter((todo) =>
@@ -63,8 +94,22 @@ const App = () => {
           onDateChange={(e) => setDueDate(e.target.value)}
           priorityValue={priority}
           onPriorityChange={(e) => setPriority(e.target.value)}
-          onAdd={handleAddTodo}
+          onAdd={editMode ? handleUpdateTodo : handleAddTodo}
         />
+        {editMode && (
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              setTask("");
+              setDueDate("");
+              setPriority("Medium");
+              setEditMode(false);
+              setEditingId(null);
+            }}
+          >
+            Cancel
+          </button>
+        )}
       </header>
 
       <div className="search-bar">
@@ -110,7 +155,7 @@ const App = () => {
         </thead>
         <tbody>
           <TodoList
-            todos={filteredTodos} 
+            todos={filteredTodos}
             onDelete={handleDeleteTodo}
             onToggleStatus={handleToggleStatus}
             onEdit={handleEditTodo}
